@@ -1,28 +1,30 @@
 import {
   BaseSource,
-  Candidate,
-  Context,
-} from "https://deno.land/x/ddc_vim@v0.13.0/types.ts";
-import { Denops, fn } from "https://deno.land/x/ddc_vim@v0.13.0/deps.ts#^";
+  DdcGatherItems,
+} from "https://deno.land/x/ddc_vim@v3.1.0/types.ts#^";
+import { GatherArguments } from "https://deno.land/x/ddc_vim@v3.1.0/base/source.ts";
 
 export class Source extends BaseSource<{}> {
-  async gatherCandidates(
-    args: GatherCandidatesArguments<Params>,
-  ): Promise<Candidate[]> {
+  private counter = 0;
+  async gather(
+    args: GatherArguments<{}>,
+  ): Promise<DdcGatherItems> {
     this.counter = (this.counter + 1) % 100;
 
     const result = await args.denops.call(
-        "luaeval",
-        "require('snippy').get_completion_items()",
-        {},
-      );
+      "luaeval",
+      "require('snippy').get_completion_items()",
+      {},
+    ) as [];
 
     if (result?.length == null) {
       return [];
     }
 
-    return result
+    return result;
   }
 
-  params(): {} { return {}; }
+  params(): {} {
+    return {};
+  }
 }
